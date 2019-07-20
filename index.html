@@ -1,0 +1,349 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>3d</title>
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+            }
+            body, html {
+                margin: 0;
+                padding: 0;
+                font-family: monospace;
+            }
+            canvas {
+                border: black solid thin;
+                transform: scaleY(-1);
+            }
+            video {
+                /* transform: scaleX(-1); */
+                margin-right: 15px;
+            }
+            .flex {
+                display: flex;
+            }
+        </style>
+        <script src="three.js"></script>
+        <script src="tfjs.js"></script> 
+        <script src="posenet.js"></script>
+    </head>
+    <body>
+        <div class="flex">
+            <video loop id="videoOne" width="600" height="600" muted="muted">
+                <source src="front.mp4" type="video/mp4">
+            </video>
+            <canvas id="canvas" width="600" height="600"></canvas>
+        </div>
+        <br>
+        <div class="flex">
+            <video loop id="videoTwo" width="600" height="600" muted="muted">
+                <source src="side.mp4" type="video/mp4">
+            </video>
+        </div>
+    </body>
+    <script>
+
+        // canvas constants
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const canvasW = canvas.width;
+        const canvasH = canvas.height;
+
+        // video
+        const videoOne = document.getElementById('videoOne');
+        const videoTwo = document.getElementById('videoTwo');
+
+        // posenet constants
+
+        const outputStride = 16;
+        const flipHorizontal = true;
+
+        // three.js
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        camera.position.set( 0, 2, 100 );
+        camera.lookAt(scene.position);
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+
+// floor
+// const size = 20, steps = 2;
+// geometry = new THREE.Geometry();
+// material = new THREE.LineBasicMaterial({
+//     color: 'teal'
+// });
+
+// for (var i = -size; i <= size; i += steps) {
+//     geometry.vertices.push(new THREE.Vector3(-size, -0.04, i));
+//     geometry.vertices.push(new THREE.Vector3(size, -0.04, i));
+//     geometry.vertices.push(new THREE.Vector3(i, -0.04, -size));
+//     geometry.vertices.push(new THREE.Vector3(i, -0.04, size));
+// }
+// const line = new THREE.LineSegments(geometry, material, THREE.LinePieces);
+
+// scene.add(line);
+
+// cube
+// var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+// var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+// var cube = new THREE.Mesh( geometry, material );
+// scene.add( cube );
+
+        // draw methods
+
+        function draw2d(kp) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.beginPath();
+
+            // eyes
+            ctx.lineTo(kp[0][1].position.x, kp[0][1].position.y);
+            ctx.lineTo(kp[0][2].position.x, kp[0][2].position.y);
+
+            // shoulders
+            ctx.moveTo(kp[0][5].position.x, kp[0][5].position.y);
+            ctx.lineTo(kp[0][6].position.x, kp[0][6].position.y);
+
+            // body
+            ctx.moveTo(kp[0][6].position.x, kp[0][6].position.y);
+            ctx.lineTo(kp[0][12].position.x, kp[0][12].position.y);
+            ctx.lineTo(kp[0][11].position.x, kp[0][11].position.y);
+            ctx.lineTo(kp[0][5].position.x, kp[0][5].position.y);        
+
+            // right arm
+            ctx.moveTo(kp[0][6].position.x, kp[0][6].position.y);
+            ctx.lineTo(kp[0][8].position.x, kp[0][8].position.y);
+            ctx.lineTo(kp[0][10].position.x, kp[0][10].position.y);
+
+            // left arm
+            ctx.moveTo(kp[0][5].position.x, kp[0][5].position.y);
+            ctx.lineTo(kp[0][7].position.x, kp[0][7].position.y);
+            ctx.lineTo(kp[0][9].position.x, kp[0][9].position.y);
+
+            // right leg
+            ctx.moveTo(kp[0][12].position.x, kp[0][12].position.y);
+            ctx.lineTo(kp[0][14].position.x, kp[0][14].position.y);
+            ctx.lineTo(kp[0][16].position.x, kp[0][16].position.y);
+
+            // left leg
+            ctx.moveTo(kp[0][11].position.x, kp[0][11].position.y);
+            ctx.lineTo(kp[0][13].position.x, kp[0][13].position.y);
+            ctx.lineTo(kp[0][15].position.x, kp[0][15].position.y);  
+
+            ctx.strokeStyle = 'red';
+            ctx.stroke();
+
+            ctx.beginPath();
+
+            // eyes
+            ctx.lineTo(kp[1][1].position.x, kp[1][1].position.y);
+            ctx.lineTo(kp[1][2].position.x, kp[1][2].position.y);
+
+            // shoulders
+            ctx.moveTo(kp[1][5].position.x, kp[1][5].position.y);
+            ctx.lineTo(kp[1][6].position.x, kp[1][6].position.y);
+
+            // body
+            ctx.moveTo(kp[1][6].position.x, kp[1][6].position.y);
+            ctx.lineTo(kp[1][12].position.x, kp[1][12].position.y);
+            ctx.lineTo(kp[1][11].position.x, kp[1][11].position.y);
+            ctx.lineTo(kp[1][5].position.x, kp[1][5].position.y);        
+
+            // right arm
+            ctx.moveTo(kp[1][6].position.x, kp[1][6].position.y);
+            ctx.lineTo(kp[1][8].position.x, kp[1][8].position.y);
+            ctx.lineTo(kp[1][10].position.x, kp[1][10].position.y);
+
+            // left arm
+            ctx.moveTo(kp[1][5].position.x, kp[1][5].position.y);
+            ctx.lineTo(kp[1][7].position.x, kp[1][7].position.y);
+            ctx.lineTo(kp[1][9].position.x, kp[1][9].position.y);
+
+            // right leg
+            ctx.moveTo(kp[1][12].position.x, kp[1][12].position.y);
+            ctx.lineTo(kp[1][14].position.x, kp[1][14].position.y);
+            ctx.lineTo(kp[1][16].position.x, kp[1][16].position.y);
+
+            // left leg
+            ctx.moveTo(kp[1][11].position.x, kp[1][11].position.y);
+            ctx.lineTo(kp[1][13].position.x, kp[1][13].position.y);
+            ctx.lineTo(kp[1][15].position.x, kp[1][15].position.y);     
+
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+        }
+
+        function draw3d(kp) {
+
+            while(scene.children.length > 0){ 
+                scene.remove(scene.children[0]);
+            }
+
+            // console.log(kp[0][1].position.x / 100);
+            // console.log(kp[0][1].position.y / 100);
+            // console.log(kp[1][1].position.x / 100);
+            // console.log('--------------------');
+
+            const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+            const geometry = new THREE.Geometry();
+
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][1].position.x / 100, 
+                kp[0][1].position.y / 100,
+                kp[1][1].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][2].position.x / 100, 
+                kp[0][2].position.y / 100,
+                kp[1][2].position.x / 100) 
+            );
+
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][5].position.x / 100, 
+                kp[0][5].position.y / 100,                
+                kp[1][5].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][6].position.x / 100, 
+                kp[0][6].position.y / 100,
+                kp[1][6].position.x / 100) 
+            );
+
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][6].position.x / 100, 
+                kp[0][6].position.y / 100,
+                kp[1][6].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][12].position.x / 100, 
+                kp[0][12].position.y / 100,
+                kp[1][12].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][11].position.x / 100, 
+                kp[0][11].position.y / 100,
+                kp[1][11].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][5].position.x / 100, 
+                kp[0][5].position.y / 100,
+                kp[1][5].position.x / 100) 
+            );
+
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][6].position.x / 100, 
+                kp[0][6].position.y / 100,
+                kp[1][6].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][8].position.x / 100, 
+                kp[0][8].position.y / 100,
+                kp[1][8].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][10].position.x / 100, 
+                kp[0][10].position.y / 100,
+                kp[1][10].position.x / 100) 
+            );
+
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][5].position.x / 100, 
+                kp[0][5].position.y / 100,
+                kp[1][5].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][7].position.x / 100, 
+                kp[0][7].position.y / 100,
+                kp[1][7].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][9].position.x / 100, 
+                kp[0][9].position.y / 100,
+                kp[1][9].position.x / 100) 
+            );
+
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][12].position.x / 100, 
+                kp[0][12].position.y / 100,
+                kp[1][12].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][14].position.x / 100, 
+                kp[0][14].position.y / 100,
+                kp[1][14].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][16].position.x / 100, 
+                kp[0][16].position.y / 100,
+                kp[1][16].position.x / 100) 
+            );
+
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][11].position.x / 100, 
+                kp[0][11].position.y / 100,
+                kp[1][11].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][13].position.x / 100, 
+                kp[0][13].position.y / 100,
+                kp[1][13].position.x / 100) 
+            );
+            geometry.vertices.push(new THREE.Vector3( 
+                kp[0][15].position.x / 100, 
+                kp[0][15].position.y / 100,
+                kp[1][15].position.x / 100) 
+            );
+
+            const line = new THREE.Line( geometry, material );
+            scene.add( line );
+
+            const speed = Date.now() * 0.00025;
+            camera.position.x = Math.cos(speed) * 10;
+            camera.position.z = Math.sin(speed) * 10;
+            camera.lookAt(scene.position);
+            renderer.render( scene, camera );
+        }
+
+        // poseNet
+
+        posenet
+            .load()
+            .then(function(net) {
+
+                videoOne.play();
+                videoTwo.play();
+
+                setInterval(() => {
+
+                    const promOne = net
+                        .estimatePoses(videoOne, flipHorizontal, outputStride)
+                        .then(function(pose) {
+                            return new Promise((resolve, reject) => resolve(pose[0].keypoints));
+                        });
+
+                    const promTwo = net
+                        .estimatePoses(videoTwo, flipHorizontal, outputStride)
+                        .then(function(pose) {
+                            return new Promise((resolve, reject) => resolve(pose[0].keypoints));
+                        });
+
+                    Promise.all([promOne, promTwo]).then(result => {
+                        // draw2d(result);
+                        draw3d(result);
+                    });
+
+                }, 60);
+
+            }
+        )
+        .catch(err => {
+            console.log(err.message);
+        });
+
+    </script>
+</html>
