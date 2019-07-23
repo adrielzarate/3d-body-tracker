@@ -78,29 +78,6 @@
         renderer.setSize( window.innerWidth, window.innerHeight );
         document.body.appendChild( renderer.domElement );
 
-// /* floor */
-// const size = 20, steps = 2;
-// geometry = new THREE.Geometry();
-// material = new THREE.LineBasicMaterial({
-//     color: 'teal'
-// });
-
-// for (var i = -size; i <= size; i += steps) {
-//     geometry.vertices.push(new THREE.Vector3(-size, -0.04, i));
-//     geometry.vertices.push(new THREE.Vector3(size, -0.04, i));
-//     geometry.vertices.push(new THREE.Vector3(i, -0.04, -size));
-//     geometry.vertices.push(new THREE.Vector3(i, -0.04, size));
-// }
-// const line = new THREE.LineSegments(geometry, material, THREE.LinePieces);
-
-// scene.add(line);
-
-// /* cube */
-// var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-// var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-// var cube = new THREE.Mesh( geometry, material );
-// scene.add( cube );
-
         // draw methods
 
         function draw2dWithCtx(kp, aCtx) {
@@ -146,189 +123,88 @@
             aCtx.stroke();
         }
 
+        // tubes
+        const strokeWidth = 0.1;
+        const strokeColor = '#FFFFFF';
+
+        // spheres
+        const sphereGeometry = new THREE.SphereGeometry( 0.12, 32, 32 );
+        const sphereMaterial = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+
+        // head
+        const geometryHead = new THREE.SphereGeometry( 0.3, 32, 32 );
+        const head = new THREE.Mesh( geometryHead, sphereMaterial );
+
+        // shoulder left
+        const shoulderL = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        // shoulder right
+        const shoulderR = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        // hip left
+        const hipL = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        // hip right
+        const hipR = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        // elbow right
+        const elbowR = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        // hand right
+        const handR = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        // elbow left
+        const elbowL = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        // hand left
+        const handL = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        // left knee
+        const kneeL = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        // right knee
+        const kneeR = new THREE.Mesh( sphereGeometry, sphereMaterial );
+
+        /* floor */
+        let floorSize = 20; 
+        const floorSteps = 2;
+        const floorGeometry = new THREE.Geometry();
+        const floorMaterial = new THREE.LineBasicMaterial({
+            color: 'teal'
+        });
+        for (let i = -floorSize; i <= floorSize; i += floorSteps) {
+            floorGeometry.vertices.push(new THREE.Vector3(-floorSize, -0.04, i));
+            floorGeometry.vertices.push(new THREE.Vector3(floorSize, -0.04, i));
+            floorGeometry.vertices.push(new THREE.Vector3(i, -0.04, -floorSize));
+            floorGeometry.vertices.push(new THREE.Vector3(i, -0.04, floorSize));
+        }
+        const floorLine = new THREE.LineSegments(floorGeometry, floorMaterial, THREE.LinePieces);
+
         function draw3d(kp) {
 
             while(scene.children.length > 0){ 
                 scene.remove(scene.children[0]);
             }
 
-            // tubes
-            const strokeWidth = 0.1;
-            const strokeColor = '#FFFFFF';
-
-            // spheres
-            const sphereGeometry = new THREE.SphereGeometry( 0.12, 32, 32 );
-            const sphereMaterial = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-
-            /* OLD */
-
-            // const material = new THREE.LineBasicMaterial( { color: 0xffffff } );
-
-            // eyes
-            // const geometryEyes = new THREE.Geometry();
-            // geometryEyes.vertices.push(new THREE.Vector3( 
-            //     kp[0][1].position.x / (-100) + 4, 
-            //     kp[0][1].position.y / (-100) + 5,
-            //     kp[1][1].position.x / (-100) + 2.5) 
-            // );
-            // geometryEyes.vertices.push(new THREE.Vector3( 
-            //     kp[0][2].position.x / (-100) + 4, 
-            //     kp[0][2].position.y / (-100) + 5,
-            //     kp[1][2].position.x / (-100) + 2.5) 
-            // );
-            // const lineEyes = new THREE.Line( geometryEyes, material );
-            // scene.add( lineEyes );
-
-            // shoulders
-            // const geometryShoulders = new THREE.Geometry();
-            // geometryShoulders.vertices.push(new THREE.Vector3( 
-            //     kp[0][5].position.x / (-100) + 4, 
-            //     kp[0][5].position.y / (-100) + 5,                
-            //     kp[1][5].position.x / (-100) + 2.5) 
-            // );
-            // geometryShoulders.vertices.push(new THREE.Vector3( 
-            //     kp[0][6].position.x / (-100) + 4, 
-            //     kp[0][6].position.y / (-100) + 5,
-            //     kp[1][6].position.x / (-100) + 2.5) 
-            // );
-            // const lineShoulders = new THREE.Line( geometryShoulders, material );
-            // scene.add( lineShoulders );
-
-            // body
-            // const geometryBody = new THREE.Geometry();
-            // geometryBody.vertices.push(new THREE.Vector3( 
-            //     kp[0][6].position.x / (-100) + 4, 
-            //     kp[0][6].position.y / (-100) + 5,
-            //     kp[1][6].position.x / (-100) + 2.5) 
-            // );
-            // geometryBody.vertices.push(new THREE.Vector3( 
-            //     kp[0][12].position.x / (-100) + 4, 
-            //     kp[0][12].position.y / (-100) + 5,
-            //     kp[1][12].position.x / (-100) + 2.5) 
-            // );
-            // geometryBody.vertices.push(new THREE.Vector3( 
-            //     kp[0][11].position.x / (-100) + 4, 
-            //     kp[0][11].position.y / (-100) + 5,
-            //     kp[1][11].position.x / (-100) + 2.5) 
-            // );
-            // geometryBody.vertices.push(new THREE.Vector3( 
-            //     kp[0][5].position.x / (-100) + 4, 
-            //     kp[0][5].position.y / (-100) + 5,
-            //     kp[1][5].position.x / (-100) + 2.5) 
-            // );
-            // const lineBody = new THREE.Line( geometryBody, material );
-            // scene.add( lineBody );
-
-            // right arm
-            // const geometryRArm = new THREE.Geometry();
-            // geometryRArm.vertices.push(new THREE.Vector3( 
-            //     kp[0][6].position.x / (-100) + 4, 
-            //     kp[0][6].position.y / (-100) + 5,
-            //     kp[1][6].position.x / (-100) + 2.5) 
-            // );
-            // geometryRArm.vertices.push(new THREE.Vector3( 
-            //     kp[0][8].position.x / (-100) + 4, 
-            //     kp[0][8].position.y / (-100) + 5,
-            //     kp[1][8].position.x / (-100) + 2.5) 
-            // );
-            // geometryRArm.vertices.push(new THREE.Vector3( 
-            //     kp[0][10].position.x / (-100) + 4, 
-            //     kp[0][10].position.y / (-100) + 5,
-            //     kp[1][10].position.x / (-100) + 2.5) 
-            // );
-            // const lineRArm = new THREE.Line( geometryRArm, material );
-            // scene.add( lineRArm );
-
-            // left arm
-            // const geometryLArm = new THREE.Geometry();
-            // geometryLArm.vertices.push(new THREE.Vector3( 
-            //     kp[0][5].position.x / (-100) + 4, 
-            //     kp[0][5].position.y / (-100) + 5,
-            //     kp[1][5].position.x / (-100) + 2.5) 
-            // );
-            // geometryLArm.vertices.push(new THREE.Vector3( 
-            //     kp[0][7].position.x / (-100) + 4, 
-            //     kp[0][7].position.y / (-100) + 5,
-            //     kp[1][7].position.x / (-100) + 2.5) 
-            // );
-            // geometryLArm.vertices.push(new THREE.Vector3( 
-            //     kp[0][9].position.x / (-100) + 4, 
-            //     kp[0][9].position.y / (-100) + 5,
-            //     kp[1][9].position.x / (-100) + 2.5) 
-            // );
-            // const lineLArm = new THREE.Line( geometryLArm, material );
-            // scene.add( lineLArm );
-
-            // right leg
-            // const geometryRLeg = new THREE.Geometry();
-            // geometryRLeg.vertices.push(new THREE.Vector3( 
-            //     kp[0][12].position.x / (-100) + 4, 
-            //     kp[0][12].position.y / (-100) + 5,
-            //     kp[1][12].position.x / (-100) + 2.5) 
-            // );
-            // geometryRLeg.vertices.push(new THREE.Vector3( 
-            //     kp[0][14].position.x / (-100) + 4, 
-            //     kp[0][14].position.y / (-100) + 5,
-            //     kp[1][14].position.x / (-100) + 2.5) 
-            // );
-            // geometryRLeg.vertices.push(new THREE.Vector3( 
-            //     kp[0][16].position.x / (-100) + 4, 
-            //     kp[0][16].position.y / (-100) + 5,
-            //     kp[1][16].position.x / (-100) + 2.5) 
-            // );
-            // const lineRLeg = new THREE.Line( geometryRLeg, material );
-            // scene.add( lineRLeg );
-
-            // left leg
-            // const geometryLLeg = new THREE.Geometry();
-            // geometryLLeg.vertices.push(new THREE.Vector3( 
-            //     kp[0][11].position.x / (-100) + 4, 
-            //     kp[0][11].position.y / (-100) + 5,
-            //     kp[1][11].position.x / (-100) + 2.5) 
-            // );
-            // geometryLLeg.vertices.push(new THREE.Vector3( 
-            //     kp[0][13].position.x / (-100) + 4, 
-            //     kp[0][13].position.y / (-100) + 5,
-            //     kp[1][13].position.x / (-100) + 2.5) 
-            // );
-            // geometryLLeg.vertices.push(new THREE.Vector3( 
-            //     kp[0][15].position.x / (-100) + 4, 
-            //     kp[0][15].position.y / (-100) + 5,
-            //     kp[1][15].position.x / (-100) + 2.5) 
-            // );
-            // const lineLLeg = new THREE.Line( geometryLLeg, material );
-            // scene.add( lineLLeg );
-
-            /* NEW */
-
             // head
-
-            const geometryHead = new THREE.SphereGeometry( 0.3, 32, 32 );
-            const head = new THREE.Mesh( geometryHead, sphereMaterial );
             scene.add( head );
-
             head.position.x = (kp[0][3].position.x / (-100) + 4) + 0.2;
             head.position.y = kp[0][4].position.y / (-100) + 5;
             head.position.z = kp[1][4].position.x / (-100) + 2.5;
 
             // shoulder left
-            const shoulderL = new THREE.Mesh( sphereGeometry, sphereMaterial );
             scene.add( shoulderL );
-
             shoulderL.position.x = kp[0][5].position.x / (-100) + 4;
             shoulderL.position.y = kp[0][5].position.y / (-100) + 5;
             shoulderL.position.z = kp[1][5].position.x / (-100) + 2.5;
 
             // shoulder right
-            const shoulderR = new THREE.Mesh( sphereGeometry, sphereMaterial );
             scene.add( shoulderR );
-
             shoulderR.position.x = kp[0][6].position.x / (-100) + 4;
             shoulderR.position.y = kp[0][6].position.y / (-100) + 5;
             shoulderR.position.z = kp[1][6].position.x / (-100) + 2.5;
 
             // shoulders
-
             const lineShoulders = new three3DExtras.tubeLine(
                 [
                     kp[0][5].position.x / (-100) + 4, 
@@ -345,28 +221,19 @@
             scene.add(lineShoulders.getObject3D());
 
             // hip left
-            const hipL = new THREE.Mesh( sphereGeometry, sphereMaterial );
             scene.add( hipL );
-
             hipL.position.x = kp[0][12].position.x / (-100) + 4;
             hipL.position.y = kp[0][12].position.y / (-100) + 5;
             hipL.position.z = kp[1][12].position.x / (-100) + 2.5;
 
             // hip right
-            const hipR = new THREE.Mesh( sphereGeometry, sphereMaterial );
             scene.add( hipR );
-
             hipR.position.x = kp[0][11].position.x / (-100) + 4;
             hipR.position.y = kp[0][11].position.y / (-100) + 5;
             hipR.position.z = kp[1][11].position.x / (-100) + 2.5;
 
             // body bottom
             const lineBodyBottom = new three3DExtras.tubeLine(
-            //     [
-            //         kp[0][6].position.x / (-100) + 4, 
-            //         kp[0][6].position.y / (-100) + 5,
-            //         kp[1][6].position.x / (-100) + 2.5
-            //     ],
                 [
                     kp[0][12].position.x / (-100) + 4, 
                     kp[0][12].position.y / (-100) + 5,
@@ -377,11 +244,6 @@
                     kp[0][11].position.y / (-100) + 5,
                     kp[1][11].position.x / (-100) + 2.5
                 ],
-                // [
-                //     kp[0][5].position.x / (-100) + 4, 
-                //     kp[0][5].position.y / (-100) + 5,
-                //     kp[1][5].position.x / (-100) + 2.5
-                // ],
                 strokeWidth, strokeColor
             );
             scene.add(lineBodyBottom.getObject3D());
@@ -403,9 +265,7 @@
             scene.add(lineRArmTop.getObject3D());
 
             // elbow right
-            const elbowR = new THREE.Mesh( sphereGeometry, sphereMaterial );
             scene.add( elbowR );
-
             elbowR.position.x = kp[0][8].position.x / (-100) + 4;
             elbowR.position.y = kp[0][8].position.y / (-100) + 5;
             elbowR.position.z = kp[1][8].position.x / (-100) + 2.5;
@@ -427,9 +287,7 @@
             scene.add(lineRArmBottom.getObject3D());
 
             // hand right
-            const handR = new THREE.Mesh( sphereGeometry, sphereMaterial );
             scene.add( handR );
-
             handR.position.x = kp[0][10].position.x / (-100) + 4;
             handR.position.y = kp[0][10].position.y / (-100) + 5;
             handR.position.z = kp[1][10].position.x / (-100) + 2.5;
@@ -451,9 +309,7 @@
             scene.add(lineLArmTop.getObject3D());
 
             // elbow left
-            const elbowL = new THREE.Mesh( sphereGeometry, sphereMaterial );
             scene.add( elbowL );
-
             elbowL.position.x = kp[0][7].position.x / (-100) + 4;
             elbowL.position.y = kp[0][7].position.y / (-100) + 5;
             elbowL.position.z = kp[1][7].position.x / (-100) + 2.5;
@@ -475,9 +331,7 @@
             scene.add(lineLArmBottom.getObject3D());
 
             // hand left
-            const handL = new THREE.Mesh( sphereGeometry, sphereMaterial );
             scene.add( handL );
-
             handL.position.x = kp[0][9].position.x / (-100) + 4;
             handL.position.y = kp[0][9].position.y / (-100) + 5;
             handL.position.z = kp[1][9].position.x / (-100) + 2.5;
@@ -499,9 +353,7 @@
             scene.add(lineRLegTop.getObject3D());
 
             // right knee
-            const kneeR = new THREE.Mesh( sphereGeometry, sphereMaterial );
             scene.add( kneeR );
-
             kneeR.position.x = kp[0][14].position.x / (-100) + 4;
             kneeR.position.y = kp[0][14].position.y / (-100) + 5;
             kneeR.position.z = kp[1][14].position.x / (-100) + 2.5;
@@ -539,9 +391,7 @@
             scene.add(lineLLegTop.getObject3D());
 
             // left knee
-            const kneeL = new THREE.Mesh( sphereGeometry, sphereMaterial );
             scene.add( kneeL );
-
             kneeL.position.x = kp[0][13].position.x / (-100) + 4;
             kneeL.position.y = kp[0][13].position.y / (-100) + 5;
             kneeL.position.z = kp[1][13].position.x / (-100) + 2.5;
@@ -562,7 +412,8 @@
             );
             scene.add(lineLLegBottom.getObject3D());
 
-            /**/
+            // floor
+            scene.add(floorLine);
 
             const speed = Date.now() * 0.00025;
             camera.position.x = Math.cos(speed) * 10;
