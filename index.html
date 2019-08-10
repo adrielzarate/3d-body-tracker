@@ -134,36 +134,47 @@
         // head
         const geometryHead = new THREE.SphereGeometry( 0.3, 32, 32 );
         const head = new THREE.Mesh( geometryHead, sphereMaterial );
+        scene.add( head );
 
         // shoulder left
         const shoulderL = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        scene.add( shoulderL );
 
         // shoulder right
         const shoulderR = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        scene.add( shoulderR );
 
         // hip left
         const hipL = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        scene.add( hipL );
 
         // hip right
         const hipR = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        scene.add( hipR );
 
         // elbow right
         const elbowR = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        scene.add( elbowR );
 
         // hand right
         const handR = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        scene.add( handR );
 
         // elbow left
         const elbowL = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        scene.add( elbowL );
 
         // hand left
         const handL = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        scene.add( handL );
 
         // left knee
         const kneeL = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        scene.add( kneeL );
 
         // right knee
         const kneeR = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        scene.add( kneeR );
 
         /* floor */
         let floorSize = 20; 
@@ -179,27 +190,23 @@
             floorGeometry.vertices.push(new THREE.Vector3(i, -0.04, floorSize));
         }
         const floorLine = new THREE.LineSegments(floorGeometry, floorMaterial, THREE.LinePieces);
+        scene.add(floorLine);
 
         function draw3d(kp) {
 
-            while(scene.children.length > 0){ 
-                scene.remove(scene.children[0]);
-            }
+            scene.children = scene.children.filter( child => child.geometry.type != 'TubeGeometry' );
 
             // head
-            scene.add( head );
             head.position.x = (kp[0][3].position.x / (-100) + 4) + 0.2;
             head.position.y = kp[0][4].position.y / (-100) + 5;
             head.position.z = kp[1][4].position.x / (-100) + 2.5;
 
             // shoulder left
-            scene.add( shoulderL );
             shoulderL.position.x = kp[0][5].position.x / (-100) + 4;
             shoulderL.position.y = kp[0][5].position.y / (-100) + 5;
             shoulderL.position.z = kp[1][5].position.x / (-100) + 2.5;
 
             // shoulder right
-            scene.add( shoulderR );
             shoulderR.position.x = kp[0][6].position.x / (-100) + 4;
             shoulderR.position.y = kp[0][6].position.y / (-100) + 5;
             shoulderR.position.z = kp[1][6].position.x / (-100) + 2.5;
@@ -221,13 +228,11 @@
             scene.add(lineShoulders.getObject3D());
 
             // hip left
-            scene.add( hipL );
             hipL.position.x = kp[0][12].position.x / (-100) + 4;
             hipL.position.y = kp[0][12].position.y / (-100) + 5;
             hipL.position.z = kp[1][12].position.x / (-100) + 2.5;
 
             // hip right
-            scene.add( hipR );
             hipR.position.x = kp[0][11].position.x / (-100) + 4;
             hipR.position.y = kp[0][11].position.y / (-100) + 5;
             hipR.position.z = kp[1][11].position.x / (-100) + 2.5;
@@ -265,7 +270,6 @@
             scene.add(lineRArmTop.getObject3D());
 
             // elbow right
-            scene.add( elbowR );
             elbowR.position.x = kp[0][8].position.x / (-100) + 4;
             elbowR.position.y = kp[0][8].position.y / (-100) + 5;
             elbowR.position.z = kp[1][8].position.x / (-100) + 2.5;
@@ -287,7 +291,6 @@
             scene.add(lineRArmBottom.getObject3D());
 
             // hand right
-            scene.add( handR );
             handR.position.x = kp[0][10].position.x / (-100) + 4;
             handR.position.y = kp[0][10].position.y / (-100) + 5;
             handR.position.z = kp[1][10].position.x / (-100) + 2.5;
@@ -309,7 +312,6 @@
             scene.add(lineLArmTop.getObject3D());
 
             // elbow left
-            scene.add( elbowL );
             elbowL.position.x = kp[0][7].position.x / (-100) + 4;
             elbowL.position.y = kp[0][7].position.y / (-100) + 5;
             elbowL.position.z = kp[1][7].position.x / (-100) + 2.5;
@@ -331,7 +333,6 @@
             scene.add(lineLArmBottom.getObject3D());
 
             // hand left
-            scene.add( handL );
             handL.position.x = kp[0][9].position.x / (-100) + 4;
             handL.position.y = kp[0][9].position.y / (-100) + 5;
             handL.position.z = kp[1][9].position.x / (-100) + 2.5;
@@ -353,7 +354,6 @@
             scene.add(lineRLegTop.getObject3D());
 
             // right knee
-            scene.add( kneeR );
             kneeR.position.x = kp[0][14].position.x / (-100) + 4;
             kneeR.position.y = kp[0][14].position.y / (-100) + 5;
             kneeR.position.z = kp[1][14].position.x / (-100) + 2.5;
@@ -391,7 +391,6 @@
             scene.add(lineLLegTop.getObject3D());
 
             // left knee
-            scene.add( kneeL );
             kneeL.position.x = kp[0][13].position.x / (-100) + 4;
             kneeL.position.y = kp[0][13].position.y / (-100) + 5;
             kneeL.position.z = kp[1][13].position.x / (-100) + 2.5;
@@ -411,9 +410,6 @@
                 strokeWidth, strokeColor
             );
             scene.add(lineLLegBottom.getObject3D());
-
-            // floor
-            scene.add(floorLine);
 
             const speed = Date.now() * 0.00025;
             camera.position.x = Math.cos(speed) * 10;
